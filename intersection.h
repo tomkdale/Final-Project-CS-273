@@ -12,7 +12,8 @@ protected:
 	 unsigned long tick;
 	 int emergencyCount;
 	 bool show;
-	 unsigned long totalWait = 0;
+	 unsigned long int totalWait = 0;
+	 unsigned long int lineWait = 0;
 	 queue <Car*> Nline;
 	 queue <Car*> Sline;
 	 queue <Car*> Eline;
@@ -32,6 +33,7 @@ public:
 	virtual void outputdata() = 0;
 	//move cars within intersection
 	virtual void moveCarsOut() =0;
+	virtual void moveTraffic() = 0;
 	//move cars from the front of each line into intersections if possible
 	virtual void moveCarsIn() = 0;
 
@@ -39,14 +41,14 @@ public:
 	void addCars() {
 		//CARS ENTER FROM NORTH
 		if (random(Ncars)) {
-			Car *enteringCar = &garage.getNewCar();//new car
+			Car *enteringCar = garage.getNewCar();//new car
 			enteringCar->set_road("north");
 			//emergency vehicles are not added to queue, they stop traffic for needed time and then leave
 			if (enteringCar->get_type() == "ambulance" || enteringCar->get_type() == "firetruck" || enteringCar->get_type() == "police car") {
 				emergencyCount = enteringCar->get_time_through();
 				enteringCar->set_start(tick);//set time that emergency vehicle enters
 				enteringCar->set_end(tick + emergencyCount);//now set time to end after the required time has gone by
-				totalWait += enteringCar->get_wait();
+				totalWait += enteringCar->get_wait() ;
 				if(show)
 					enteringCar->print_data();
 			}
@@ -58,7 +60,7 @@ public:
 		}
 		//CARS ENTER FROM SOUTH
 		if (random(Scars)) {
-			Car* enteringCar = &garage.getNewCar();//new car
+			Car* enteringCar = garage.getNewCar();//new car
 			enteringCar->set_road("south");
 
 			 //emergency vehicles are not added to queue, they stop traffic for needed time and then leave
@@ -78,7 +80,7 @@ public:
 
 		//CARS ENTER FROM EAST
 		if (random(Ecars)) {
-			Car* enteringCar = &garage.getNewCar();//new car
+			Car* enteringCar = garage.getNewCar();//new car
 			enteringCar->set_road("east");
 
 			//emergency vehicles are not added to queue, they stop traffic for needed time and then leave
@@ -98,7 +100,7 @@ public:
 
 		//CARS ENTER FROM WEST
 		if (random(Wcars)) {
-			Car* enteringCar = &garage.getNewCar();//new car
+			Car* enteringCar = garage.getNewCar();//new car
 			enteringCar->set_road("west");
 
 			 //emergency vehicles are not added to queue, they stop traffic for needed time and then leave
@@ -120,16 +122,18 @@ public:
 	//runs simulation for 4 simulated hours
 	void run(){
 		tick = 0;
-		while (tick < 100) {//loop for every 14400 seconds to make 4 hours
+		while (tick < 14400) {//loop for every 14400 seconds to make 4 hours
 			addCars();//add any cars that need to enter the queues
 			moveCarsOut();//move cars that are already in intersection
+			moveTraffic();//moves other traffic in intersection
 			if (emergencyCount == 0)//if no emergency vehicle at intersection
 				moveCarsIn();//move cars that can into intersection
+			
 			else
 			{
 				emergencyCount--; //"move" ambulance through intersection
 			}
-			++tick;
+			tick++;
 		}
 		}
 	virtual int rate() = 0;//returns value of effiecency

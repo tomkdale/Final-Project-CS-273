@@ -18,31 +18,31 @@ private:
 	Car* overlap = NULL;// abstract position to prevent overlap of cars (see move carsOut)
 
 
-	//move any cars that can out of intersection
+	//move any cars that are ready out of intersection
 	void moveCarsOut() {
-		if (NNE && NNE->get_exit("north")) {//is car ready to exit
-			NNE->set_end(tick + 1);//set end time to now
+		if (NNE && NNE->get_exit() == "north") {//is car ready to exit
+			NNE->set_end(tick);//set end time to now
 			totalWait += NNE->get_wait();//update total wait
 			if (show)
 				NNE->print_data();
-			NNE = NULL;
+			NNE = NULL;//clear space
 		}
-		if (NWW && NWW->get_exit("west")) {//repeat for W, S, E
-			NWW->set_end(tick + 1);
+		if (NWW && NWW->get_exit() =="west") {//repeat for W, S, E
+			NWW->set_end(tick);
 			totalWait += NWW->get_wait();
 			if (show)
 				NWW->print_data();
 			NWW = NULL;
 		}
-		if (SSW && SSW->get_exit("south")) {
-			SSW->set_end(tick + 1);
+		if (SSW && SSW->get_exit() =="south") {
+			SSW->set_end(tick);
 			totalWait += SSW->get_wait();
 			if (show)
 				SSW->print_data();
 			SSW = NULL;
 		}
-		if (SEE && SEE->get_exit("east")) {
-			SEE->set_end(tick + 1);
+		if (SEE && SEE->get_exit() == "east") {
+			SEE->set_end(tick);
 			totalWait += SEE->get_wait();
 			if (show)
 				SEE->print_data();
@@ -50,13 +50,11 @@ private:
 				
 		}
 		
-		rotate();//call rotate function for remaining cars in roundabout
-		
 	}
 	
 
 		//rotate all car positions in roundabout
-		void rotate() {
+		void moveTraffic() {
 			overlap = NNE;
 			NNE = NEE;
 			NEE = SEE;
@@ -66,58 +64,44 @@ private:
 			SWW = NWW;
 			NWW = NNW;
 			NNW = overlap;
-			
-			//FIXME deletethis
-			if (NNE != NULL)
-				cout << "1";
-			else cout << "0";
-			if (NEE != NULL)
-				cout << "1";
-			else cout << "0";
-			if (SEE != NULL)
-				cout << "1";
-			else cout << "0";
-			if (SSE != NULL)
-				cout << "1";
-			else cout << "0";
-			if (SSW != NULL)
-				cout << "1";
-			else cout << "0";
-			if (SWW != NULL)
-				cout << "1";
-			else cout << "0";
-			if (NWW != NULL)
-				cout << "1";
-			else cout << "0";
-			if (NNW != NULL)
-				cout << "1";
-			else cout << "0";
-			cout << "\n";
-		//	*/
+		
 	}
 
 		//move waiting cars into intersection
 	void moveCarsIn() {
+		if (tick % 3 != 0) // wait 2 seconds each time this function is called in order to simulate hesitation
+			return;
 		if (!Nline.empty() && !(NNW)) {//if car is waiting in line and space is free to enter
 			NNW = Nline.front();//move car into space
 			Nline.pop();
+			lineWait += tick - NNW->get_start();
 		}
 		if (!Wline.empty() && !(SWW)) {//repeate for W,S,E
 			SWW = Wline.front();
 			Wline.pop();
+			lineWait += tick - SWW->get_start();
 		}
 		if (!Sline.empty() && !(SSE)) {
 			SSE = Sline.front();
 			Sline.pop();
+			lineWait += tick - SSE->get_start();
 		}
 		if (!Eline.empty() && !(NEE)) {
 			NEE = Eline.front();
 			Eline.pop();
+			lineWait += tick - NEE->get_start();
 		}
 	}
 public:
+	//show total wait time
 	void outputdata() {
-		cout << "Roundabout has finished\n";
+
+		unsigned long int minutes = lineWait / 60;
+		int seconds = lineWait % 60;
+		cout << "The time cars spend waiting to enter roundabout was " << minutes << "minutes and " << seconds << "seconds.\n";
+		minutes = totalWait / 60;
+		seconds = totalWait % 60;
+		cout << "Total use time for roundabout was " << minutes << "minutes and " << seconds << "seconds.\n";
 	}
 	int rate() {
 		return totalWait;

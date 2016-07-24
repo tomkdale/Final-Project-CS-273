@@ -17,8 +17,6 @@ private:
 	string roadOUT;
 	int start;
 	int end;
-
-	int seven = 7; //FIXME
 public:
 	Car(string name, string type) {
 		this->name = name;
@@ -57,10 +55,10 @@ public:
 	string get_type() const {
 		return type;
 	}
-
-	int get_seven() {//FIXME
-		return seven;
+	long unsigned int get_start() {
+		return start;
 	}
+
 	long unsigned int get_wait() {
 		return end - start;
 	}
@@ -79,17 +77,14 @@ public:
 		return name;
 	}
 
-	//returns true if upcoming road is desired exit
-	bool get_exit(string road) {
-		if (road == roadOUT)
-			return true;
-		else
-			return false;
+	//returns  desired exit
+	string get_exit() const {
+		return roadOUT;
 	}
 };
 
 class set_of_cars{//class for holding and manipulating an alphabetical set of cars
-	set <Car> garage;
+	set <Car*> garage;
 public:
 	set_of_cars() {
 		//read from file 2000 names
@@ -103,16 +98,16 @@ public:
 		for (int i = 0; i < 2000; i++) {
 			cin >> name;
 			string type = randomType();
-			Car newCar(name, type);
-			garage.insert(newCar);
+			Car* C =  new Car(name, type);
+			garage.insert(C);
 
 		}
 		cin.rdbuf(orig_cin);
 		ss.close();
 	}
 
-	Car getNewCar() {
-		set<Car>::iterator it = garage.begin();
+	Car* getNewCar() {
+		set<Car*>::iterator it = garage.begin();
 		int whichCar = randomInt(1900); //get a random number representing one of the 0 - 2000 residents
 		for (int i = 0; i < whichCar; i++) {
 			++it;

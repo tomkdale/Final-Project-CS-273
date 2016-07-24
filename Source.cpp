@@ -73,6 +73,7 @@ void getuserinfo() {//used to set initial intersection data
 }
 
 int main() {
+	seedRandom();
 	cout << "Welcome to the CS-273ville traffic intersection simulation.\n";
 	getuserinfo();
 	cout << "Running roundabout simulation.\n";
@@ -88,3 +89,5 @@ int main() {
 }
 
 //FIXME handle entry exceptions like 'h' or '.7'
+
+//FIXME get car data from traffic light to show itself

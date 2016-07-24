@@ -4,6 +4,9 @@
 #include <string>
 #include <ctime>
 //special function for car arrival returns true x/3600 of the time
+void seedRandom() {
+	srand(time(0));
+}
 bool random(int x) {
 	double num = rand() % 3600;
 	if (num < x)
@@ -51,7 +54,5 @@ int randomInt(int total) {
 	return x;
 }
 
-
-//FIXME: make rand function rely on time
 
 #endif
