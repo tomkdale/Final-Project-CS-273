@@ -3,10 +3,12 @@
 #include <cstdlib>
 #include <string>
 #include <ctime>
+
 //special function for car arrival returns true x/3600 of the time
 void seedRandom() {
 	srand(time(0));
 }
+//returns true x / 1 hour % of the time, used for entering car
 bool random(int x) {
 	double num = rand() % 3600;
 	if (num < x)
@@ -48,7 +50,7 @@ std::string randomType() {
 }
 
 
-//returns integer between 0 and total
+//returns integer between 0 and total used for getting random item in set
 int randomInt(int total) {
 	int x = rand() % total;
 	return x;

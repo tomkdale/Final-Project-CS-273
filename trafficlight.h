@@ -97,6 +97,7 @@ private:
 			}
 		}
 	}
+
 	//move any cars that are ready out of intersection
 	void moveCarsOut() {
 
@@ -108,6 +109,7 @@ private:
 			totalWait += NE->get_wait();//update total wait
 			if (show)
 				NE->print_data();
+			numCars++;
 			NE = NULL;//clear space
 		}
 		if (NW && NW->get_exit() == "west") {//repeat for W,S, E
@@ -115,6 +117,7 @@ private:
 			totalWait += NW->get_wait();
 			if (show)
 				NW->print_data();
+			numCars++;
 			NW = NULL;
 		}
 		if (SW && SW->get_exit() == "south") {
@@ -122,6 +125,7 @@ private:
 			totalWait += SW->get_wait();
 			if (show)
 				SW->print_data();
+			numCars++;
 			SW = NULL;
 		}
 		if (SE && SE->get_exit() == "east"){
@@ -129,6 +133,7 @@ private:
 			totalWait += SE->get_wait();
 			if (show)
 				SE->print_data();
+			numCars++;
 			SE = NULL;
 		}
 	}
@@ -136,16 +141,7 @@ private:
 	//moves traffic in intersection 
 	void moveTraffic() {
 		//remember no car will be right next to its exit because it was removed in moveCarsOut()
-		/*if (NW != NULL) cout << 1;//FIXME delete this
-		else cout << 0;
-		if (NE != NULL) cout << 1;
-		else cout << 0;
-		if (SW != NULL) cout << "\n" << 1;
-		else cout << "\n" << 0;
-		if (SE != NULL) cout << 1;
-		else cout << 0;
-		cout << "\n\n";
-		*/
+	
 		if (tick % 2 == 0)//one move should take two seconds, so only execut every other time
 			return;
 		NSoverlap = SE;//move south east car to overlap space (for left turn crash purposes)
@@ -183,16 +179,24 @@ private:
 		}
 
 	}
+
 public:
 	//show total wait time
 	void outputdata() {
+		///return data for time waiting for intersection, time in intersection, and average total time
 		unsigned long int minutes = lineWait / 60;
 		int seconds = lineWait % 60;
-		cout << "The time cars spend waiting to enter lighted intersection was " << minutes << "minutes and " << seconds << "seconds.\n";
-		minutes = totalWait / 60;
-		seconds = totalWait % 60;
-		cout << "Total use time for lighted intersection was " << minutes << "minutes and " << seconds << "seconds.\n";
+		cout << "The time cars spent waiting to enter lighted intersection was " << minutes << "minutes and " << seconds << "seconds.\n";
+		unsigned long IN = totalWait - lineWait;//get time just inside the intersection
+		minutes = IN / 60;
+		seconds = IN % 60;
+		cout << "The time cars spent in lighted intersection was " << minutes << "minutes and " << seconds << "seconds.\n";
+		minutes = (totalWait / numCars) / 60;
+		seconds = (totalWait / numCars) % 60;
+		cout << "The average time it takes for a car to move through is " << minutes << "minutes and " << seconds << "seconds.\n\n";
 	}
+
+	//returns total wait time
 	int rate() {
 		return totalWait;
 	}

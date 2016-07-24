@@ -1,10 +1,6 @@
 #include "intersection.h"
-#include "Vehicle.h"
-#include "random.h"
-#include <string>
-#include <iostream>
-using namespace std;
 
+//child class roundabout performs roundabout simulation
 class roundabout : public intersection {
 private:
 	Car* NNE = NULL;// 8 positions in the roundabout NULL if empty
@@ -25,6 +21,7 @@ private:
 			totalWait += NNE->get_wait();//update total wait
 			if (show)
 				NNE->print_data();
+			numCars++;
 			NNE = NULL;//clear space
 		}
 		if (NWW && NWW->get_exit() =="west") {//repeat for W, S, E
@@ -32,6 +29,7 @@ private:
 			totalWait += NWW->get_wait();
 			if (show)
 				NWW->print_data();
+			numCars++;
 			NWW = NULL;
 		}
 		if (SSW && SSW->get_exit() =="south") {
@@ -39,6 +37,7 @@ private:
 			totalWait += SSW->get_wait();
 			if (show)
 				SSW->print_data();
+			numCars++;
 			SSW = NULL;
 		}
 		if (SEE && SEE->get_exit() == "east") {
@@ -46,6 +45,7 @@ private:
 			totalWait += SEE->get_wait();
 			if (show)
 				SEE->print_data();
+			numCars++;
 			SEE = NULL;
 				
 		}
@@ -53,21 +53,21 @@ private:
 	}
 	
 
-		//rotate all car positions in roundabout
-		void moveTraffic() {
-			overlap = NNE;
-			NNE = NEE;
-			NEE = SEE;
-			SEE = SSE;
-			SSE = SSW;
-			SSW = SWW;
-			SWW = NWW;
-			NWW = NNW;
-			NNW = overlap;
+	//rotate all car positions in roundabout
+	void moveTraffic() {
+		overlap = NNE;//moves one space to an overlap to keep from a collision
+		NNE = NEE;//rotate all cars that are in roundabout
+		NEE = SEE;
+		SEE = SSE;
+		SSE = SSW;
+		SSW = SWW;
+		SWW = NWW;
+		NWW = NNW;
+		NNW = overlap;//move object out of overlap
 		
 	}
 
-		//move waiting cars into intersection
+	//move waiting cars into intersection
 	void moveCarsIn() {
 		if (tick % 3 != 0) // wait 2 seconds each time this function is called in order to simulate hesitation
 			return;
@@ -92,17 +92,24 @@ private:
 			lineWait += tick - NEE->get_start();
 		}
 	}
+
 public:
 	//show total wait time
 	void outputdata() {
-
+		///return data for time waiting for intersection, and time in intersection, and average total wait
 		unsigned long int minutes = lineWait / 60;
 		int seconds = lineWait % 60;
-		cout << "The time cars spend waiting to enter roundabout was " << minutes << "minutes and " << seconds << "seconds.\n";
-		minutes = totalWait / 60;
-		seconds = totalWait % 60;
-		cout << "Total use time for roundabout was " << minutes << "minutes and " << seconds << "seconds.\n";
+		cout << "The time cars spent waiting to enter roundabout was " << minutes << "minutes and " << seconds << "seconds.\n";
+		unsigned long IN = totalWait - lineWait;//find time taken just in intersection
+		minutes = IN / 60;
+		seconds = IN % 60;
+		cout << "The time cars spent in the roundabout was " << minutes << "minutes and " << seconds << "seconds.\n";
+		minutes = (totalWait / numCars) / 60;
+		seconds = (totalWait / numCars) % 60;
+		cout << "The average time it takes for a car to move through is " << minutes << "minutes and " << seconds << "seconds.\n\n";
 	}
+
+	//return total wait
 	int rate() {
 		return totalWait;
 	}
