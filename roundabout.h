@@ -1,3 +1,5 @@
+#ifndef ROUNDABOUT
+#define ROUNDABOUT
 #include "intersection.h"
 
 //child class roundabout performs roundabout simulation
@@ -115,3 +117,4 @@ public:
 	}
 };
 
+#endif

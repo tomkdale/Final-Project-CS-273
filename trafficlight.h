@@ -1,3 +1,6 @@
+#ifndef TRAFFICLIGHT
+#define TRAFFICLIGHT
+
 #include "intersection.h"
 
 class trafficlight : public intersection {
@@ -201,3 +204,5 @@ public:
 		return totalWait;
 	}
 };
+
+#endif
